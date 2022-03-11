@@ -8,7 +8,17 @@
 
 - 通过仓库 [@Loyalsoldier/geoip](https://github.com/Loyalsoldier/geoip) 生成
 - 其中全球 IP 地址（IPv4 和 IPv6）来源于 [MaxMind GeoLite2](https://dev.maxmind.com/geoip/geoip2/geolite2/)，`CN`（中国大陆）类别下的 IPv4 地址来源于 [ipip.net](https://github.com/17mon/china_ip_list)
-- 新增 `geoip:telegram` 类别，方便黑名单模式用户使用
+- 新增类别（方便有特殊需求的用户使用）：
+  - `geoip:cloudflare`
+  - `geoip:cloudfront`
+  - `geoip:facebook`
+  - `geoip:fastly`
+  - `geoip:google`
+  - `geoip:netflix`
+  - `geoip:telegram`
+  - `geoip:twitter`
+
+> 希望定制 `geoip.dat` 文件？查看仓库 [@Loyalsoldier/geoip](https://github.com/Loyalsoldier/geoip)。
 
 ### geosite.dat
 
@@ -35,7 +45,6 @@
   - [**慎用**] Windows 操作系统使用的系统升级域名 [@crazy-max/WindowsSpyBlocker/hosts/update.txt](https://github.com/crazy-max/WindowsSpyBlocker/blob/master/data/hosts/update.txt) 加入到 `geosite:win-update` 类别中
   - [**慎用**] Windows 操作系统附加的隐私跟踪域名 [@crazy-max/WindowsSpyBlocker/hosts/extra.txt](https://github.com/crazy-max/WindowsSpyBlocker/blob/master/data/hosts/extra.txt) 加入到 `geosite:win-extra` 类别中
   - 关于这三个类别的使用方式，请参考下面 [geosite 的 Routing 配置方式](https://github.com/Loyalsoldier/v2ray-rules-dat#geositedat-1)
-- **加入更多代理域名**：通过仓库 [@GeQ1an/Rules](https://github.com/GeQ1an/Rules/tree/master/QuantumultX) 和 [@lhie1/Rules](https://github.com/lhie1/Rules/tree/master) 获取更多代理域名，并加入到 `geosite:geolocation-!cn` 类别中
 - **可添加自定义直连、代理和广告域名**：由于上游域名列表更新缓慢或缺失某些域名，所以引入**需要添加的域名**列表。[`hidden 分支`](https://github.com/Loyalsoldier/v2ray-rules-dat/tree/hidden)里的三个文件 `direct.txt`、`proxy.txt` 和 `reject.txt`，分别存放自定义的需要添加的直连、代理、广告域名，最终分别加入到 `geosite:cn`、`geosite:geolocation-!cn` 和 `geosite:category-ads-all` 类别中
 - **可移除自定义直连、代理和广告域名**：由于上游域名列表存在需要被移除的域名，所以引入**需要移除的域名**列表。[`hidden 分支`](https://github.com/Loyalsoldier/v2ray-rules-dat/tree/hidden)里的三个文件 `direct-need-to-remove.txt`、`proxy-need-to-remove.txt` 和 `reject-need-to-remove.txt`，分别存放自定义的需要从 `direct-list`（直连域名列表）、`proxy-list`（代理域名列表）和 `reject-list`（广告域名列表） 移除的域名
 
@@ -166,9 +175,7 @@ steamstatic.com.8686c.com @cn
     {
       "type": "field",
       "outboundTag": "Reject",
-      "domain": [
-        "geosite:category-ads-all"
-      ]
+      "domain": ["geosite:category-ads-all"]
     },
     {
       "type": "field",
@@ -184,21 +191,17 @@ steamstatic.com.8686c.com @cn
     {
       "type": "field",
       "outboundTag": "Proxy",
-      "domain": [
-        "geosite:geolocation-!cn"
-      ]
+      "domain": ["geosite:geolocation-!cn"]
     },
     {
       "type": "field",
       "outboundTag": "Direct",
-      "domain": [
-        "geosite:cn"
-      ]
+      "domain": ["geosite:cn"]
     },
     {
-     "type": "field",
-     "outboundTag": "Proxy",
-     "network": "tcp,udp"
+      "type": "field",
+      "outboundTag": "Proxy",
+      "network": "tcp,udp"
     }
   ]
 }
@@ -212,30 +215,22 @@ steamstatic.com.8686c.com @cn
     {
       "type": "field",
       "outboundTag": "Reject",
-      "domain": [
-        "geosite:category-ads-all"
-      ]
+      "domain": ["geosite:category-ads-all"]
     },
     {
       "type": "field",
       "outboundTag": "Proxy",
-      "domain": [
-        "geosite:tld-!cn",
-        "geosite:gfw",
-        "geosite:greatfire"
-      ]
+      "domain": ["geosite:gfw", "geosite:greatfire"]
     },
     {
       "type": "field",
       "outboundTag": "Proxy",
-      "ip": [
-        "geoip:telegram"
-      ]
+      "ip": ["geoip:telegram"]
     },
     {
-     "type": "field",
-     "outboundTag": "Direct",
-     "network": "tcp,udp"
+      "type": "field",
+      "outboundTag": "Direct",
+      "network": "tcp,udp"
     }
   ]
 }
@@ -245,26 +240,30 @@ steamstatic.com.8686c.com @cn
 
 ```json
 "dns": {
+  "hosts": {
+    "dns.google": "8.8.8.8",
+    "dns.pub": "119.29.29.29",
+    "dns.alidns.com": "223.5.5.5",
+    "geosite:category-ads-all": "127.0.0.1"
+  },
   "servers": [
+    {
+      "address": "https://1.1.1.1/dns-query",
+      "domains": ["geosite:geolocation-!cn"],
+      "expectIPs": ["geoip:!cn"]
+    },
+    "8.8.8.8",
     {
       "address": "114.114.114.114",
       "port": 53,
-      "domains": [
-        "geosite:cn",
-        "geosite:category-games@cn"
-      ],
-      "expectIPs": [
-        "geoip:cn"
-      ]
+      "domains": ["geosite:cn", "geosite:category-games@cn"],
+      "expectIPs": ["geoip:cn"],
+      "skipFallback": true
     },
     {
-      "address": "https://1.1.1.1/dns-query",
-      "domains": [
-        "geosite:geolocation-!cn"
-      ]
-    },
-    "https+local://223.5.5.5/dns-query",
-    "119.29.29.29"
+      "address": "localhost",
+      "skipFallback": true
+    }
   ]
 }
 ```
@@ -273,9 +272,9 @@ steamstatic.com.8686c.com @cn
 
 注意事项：
 
-- 由于下面客户端配置使用了 DoH (DNS over HTTPS) 功能，所以必须使用 v4.22.0 或更新版本的 [V2Ray](https://github.com/v2fly/v2ray-core/releases)
+- 由于下面客户端配置的 DNS 使用了 `skipFallback` 选项，所以必须使用 v4.37.2 或更新版本的 [V2Ray](https://github.com/v2fly/v2ray-core/releases)
 - 下面客户端配置使 V2Ray 在本机开启 SOCKS 代理（监听 1080 端口）和 HTTP 代理（监听 2080 端口），允许局域网内其他设备连接并使用代理
-- BT 流量统统直连（实测依然会有部分 BT 流量走代理，尚不清楚是不是 V2Ray 的 bug。如果服务商禁止 BT 下载的话，请不要为下载软件设置代理）
+- BT 流量统统直连（实测依然会有部分 BT 流量走代理，如果服务商禁止 BT 下载，请不要为下载软件设置代理）
 - 最后，不命中任何路由规则的请求和流量，统统走代理
 - `outbounds` 里的第一个大括号内的配置，即为 V2Ray 代理服务的配置。请根据自身需求进行修改，并参照 V2Ray 官网配置文档中的 [配置 > Outbounds > OutboundObject](https://www.v2fly.org/config/outbounds.html#outboundobject) 部分进行补全
 
@@ -287,26 +286,31 @@ steamstatic.com.8686c.com @cn
   "dns": {
     "hosts": {
       "dns.google": "8.8.8.8",
-      "doh.pub": "119.29.29.29"
+      "dns.pub": "119.29.29.29",
+      "dns.alidns.com": "223.5.5.5",
+      "geosite:category-ads-all": "127.0.0.1"
     },
     "servers": [
-      "https://dns.google/dns-query",
       {
-        "address": "https+local://223.5.5.5/dns-query",
+        "address": "https://1.1.1.1/dns-query",
+        "domains": ["geosite:geolocation-!cn", "geosite:google@cn"],
+        "expectIPs": ["geoip:!cn"]
+      },
+      "8.8.8.8",
+      {
+        "address": "114.114.114.114",
+        "port": 53,
         "domains": [
           "geosite:cn",
           "geosite:icloud",
           "geosite:category-games@cn"
         ],
-        "expectIPs": [
-          "geoip:cn"
-        ]
+        "expectIPs": ["geoip:cn"],
+        "skipFallback": true
       },
       {
-        "address": "https://1.1.1.1/dns-query",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
+        "address": "localhost",
+        "skipFallback": true
       }
     ]
   },
@@ -370,6 +374,7 @@ steamstatic.com.8686c.com @cn
   ],
   "routing": {
     "domainStrategy": "IPIfNonMatch",
+    "domainMatcher": "mph",
     "rules": [
       {
         "type": "field",
@@ -379,26 +384,22 @@ steamstatic.com.8686c.com @cn
       {
         "type": "field",
         "outboundTag": "Dns-Out",
-        "inboundTag": [
-          "Socks-In",
-          "Http-In"
-        ],
+        "inboundTag": ["Socks-In", "Http-In"],
         "network": "udp",
         "port": 53
       },
       {
         "type": "field",
         "outboundTag": "Reject",
-        "domain": [
-          "geosite:category-ads-all"
-        ]
+        "domain": ["geosite:category-ads-all"]
       },
       {
         "type": "field",
         "outboundTag": "Proxy",
         "domain": [
           "full:www.icloud.com",
-          "domain:icloud-content.com"
+          "domain:icloud-content.com",
+          "geosite:google"
         ]
       },
       {
@@ -413,25 +414,17 @@ steamstatic.com.8686c.com @cn
       {
         "type": "field",
         "outboundTag": "Proxy",
-        "domain": [
-          "geosite:geolocation-!cn"
-        ]
+        "domain": ["geosite:geolocation-!cn"]
       },
       {
         "type": "field",
         "outboundTag": "Direct",
-        "domain": [
-          "geosite:cn",
-          "geosite:private"
-        ]
+        "domain": ["geosite:cn", "geosite:private"]
       },
       {
         "type": "field",
         "outboundTag": "Direct",
-        "ip": [
-          "geoip:cn",
-          "geoip:private"
-        ]
+        "ip": ["geoip:cn", "geoip:private"]
       },
       {
         "type": "field",
@@ -442,6 +435,11 @@ steamstatic.com.8686c.com @cn
   }
 }
 ```
+
+## 激赏 | Donation
+
+- **比特币（BTC）bech32 地址**：bc1qfe4nxcanet4w4ph8pf6qqyf263y68vw26nv9j9
+- **比特币（BTC）地址**：3PRyneb1D7jFFBakAaJiCRSsxsXAtMr7LN
 
 ## 使用本项目的项目
 
@@ -459,8 +457,6 @@ steamstatic.com.8686c.com @cn
 - [@pexcn/gfwlist-extras](https://github.com/pexcn/gfwlist-extras)
 - [@cokebar/gfwlist2dnsmasq](https://github.com/cokebar/gfwlist2dnsmasq)
 - [@Loyalsoldier/cn-blocked-domain](https://github.com/Loyalsoldier/cn-blocked-domain)
-- [@GeQ1an/Rules](https://github.com/GeQ1an/Rules/tree/master/QuantumultX)
-- [@lhie1/Rules](https://github.com/lhie1/Rules/tree/master)
 - [@AdblockPlus/EasylistChina+Easylist.txt](https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt)
 - [@AdGuard/DNS-filter](https://kb.adguard.com/en/general/adguard-ad-filters#dns-filter)
 - [@PeterLowe/adservers](https://pgl.yoyo.org/adservers)
